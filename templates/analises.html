@@ -33,6 +33,111 @@ Análises - FinanFácil
 
 
 <!-- ========================================== -->
+<!-- FILTRO DE PERÍODO -->
+<!-- ========================================== -->
+
+<div class="card border-0 shadow-sm mb-5">
+
+    <div class="card-body p-4">
+
+        <div class="mb-3">
+
+            <h5 class="fw-bold mb-1">
+                Filtrar período
+            </h5>
+
+            <p class="text-muted small mb-0">
+                Selecione o período que deseja analisar.
+            </p>
+
+        </div>
+
+
+        <form method="GET">
+
+            <div class="row g-3 align-items-end">
+
+
+                <!-- DATA INICIAL -->
+
+                <div class="col-md-4">
+
+                    <label
+                        for="data_inicio"
+                        class="form-label fw-semibold"
+                    >
+                        Data inicial
+                    </label>
+
+                    <input
+                        type="date"
+                        id="data_inicio"
+                        name="data_inicio"
+                        class="form-control"
+                        value="{{ data_inicio|default:'' }}"
+                    >
+
+                </div>
+
+
+                <!-- DATA FINAL -->
+
+                <div class="col-md-4">
+
+                    <label
+                        for="data_fim"
+                        class="form-label fw-semibold"
+                    >
+                        Data final
+                    </label>
+
+                    <input
+                        type="date"
+                        id="data_fim"
+                        name="data_fim"
+                        class="form-control"
+                        value="{{ data_fim|default:'' }}"
+                    >
+
+                </div>
+
+
+                <!-- BOTÕES -->
+
+                <div class="col-md-4">
+
+                    <div class="d-flex gap-2">
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                        >
+                            Filtrar
+                        </button>
+
+
+                        <a
+                            href="{% url 'analises' %}"
+                            class="btn btn-light border"
+                        >
+                            Limpar
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================== -->
 <!-- INDICADORES -->
 <!-- ========================================== -->
 
@@ -169,11 +274,13 @@ Análises - FinanFácil
 
                 </h2>
 
+
                 {% if descricao_maior_despesa %}
 
                     <p class="text-muted mb-0">
 
                         Transação:
+
                         <strong>
                             {{ descricao_maior_despesa }}
                         </strong>
@@ -246,7 +353,7 @@ Análises - FinanFácil
             </h4>
 
             <p class="text-muted small mb-0">
-                As cinco maiores despesas cadastradas.
+                As cinco maiores despesas do período.
             </p>
 
         </div>
@@ -335,11 +442,11 @@ Análises - FinanFácil
             <div class="text-center py-5">
 
                 <h5 class="fw-semibold">
-                    Nenhuma despesa cadastrada
+                    Nenhuma despesa encontrada
                 </h5>
 
                 <p class="text-muted mb-0">
-                    Cadastre algumas despesas para visualizar as análises.
+                    Não existem despesas no período selecionado.
                 </p>
 
             </div>

@@ -170,20 +170,14 @@ def relatorios(request):
         .order_by('mes')
     )
 
-
     dados_grafico = []
-
 
     for item in dados_grafico_queryset:
 
         dados_grafico.append({
-
             'mes': item['mes'].strftime('%m/%Y'),
-
             'tipo': item['tipo'],
-
             'total': float(item['total']),
-
         })
 
 
@@ -215,89 +209,50 @@ def relatorios(request):
     )
 
 
-def transacoes(request):
-
-    lista_transacoes = Transacao.objects.order_by(
-        '-data',
-        '-id'
-    )
-
-    return render(
-        request,
-        'transacoes.html',
-        {
-            'transacoes': lista_transacoes
-        }
-    )
-
-
-def editar_transacao(request, id):
-
-    transacao = Transacao.objects.get(
-        id=id
-    )
-
-
-    if request.method == 'POST':
-
-        form = TransacaoForm(
-            request.POST,
-            instance=transacao
-        )
-
-
-        if form.is_valid():
-
-            form.save()
-
-            return redirect(
-                'transacoes'
-            )
-
-    else:
-
-        form = TransacaoForm(
-            instance=transacao
-        )
-
-
-    return render(
-        request,
-        'editar_transacao.html',
-        {
-            'form': form,
-            'transacao': transacao
-        }
-    )
-
-
-def excluir_transacao(request, id):
-
-    transacao = Transacao.objects.get(
-        id=id
-    )
-
-
-    if request.method == 'POST':
-
-        transacao.delete()
-
-        return redirect(
-            'transacoes'
-        )
-
-
-    return render(
-        request,
-        'excluir_transacao.html',
-        {
-            'transacao': transacao
-        }
-    )
-
 def analises(request):
 
-    transacoes = Transacao.objects.values(
+    # ==========================================
+    # FILTRO DE PERÍODO
+    # ==========================================
+
+    data_inicio = request.GET.get('data_inicio')
+    data_fim = request.GET.get('data_fim')
+
+
+    # ==========================================
+    # BUSCA AS TRANSAÇÕES
+    # ==========================================
+
+    transacoes = Transacao.objects.all()
+
+
+    # ==========================================
+    # APLICA DATA INICIAL
+    # ==========================================
+
+    if data_inicio:
+
+        transacoes = transacoes.filter(
+            data__gte=data_inicio
+        )
+
+
+    # ==========================================
+    # APLICA DATA FINAL
+    # ==========================================
+
+    if data_fim:
+
+        transacoes = transacoes.filter(
+            data__lte=data_fim
+        )
+
+
+    # ==========================================
+    # SELECIONA OS CAMPOS
+    # ==========================================
+
+    transacoes = transacoes.values(
         'tipo',
         'descricao',
         'valor',
@@ -312,14 +267,27 @@ def analises(request):
     if not transacoes:
 
         contexto = {
+
             'total_transacoes': 0,
+
             'total_receitas': 0,
+
             'total_despesas': 0,
+
             'media_despesas': 0,
+
             'maior_despesa': 0,
+
             'descricao_maior_despesa': '',
+
             'percentual_despesas': 0,
+
             'maiores_despesas': [],
+
+            'data_inicio': data_inicio,
+
+            'data_fim': data_fim,
+
         }
 
         return render(
@@ -333,7 +301,9 @@ def analises(request):
     # CRIA DATAFRAME
     # ==========================================
 
-    df = pd.DataFrame(list(transacoes))
+    df = pd.DataFrame(
+        list(transacoes)
+    )
 
 
     # ==========================================
@@ -360,7 +330,9 @@ def analises(request):
         df['tipo'] == 'receita'
     ]
 
-    total_receitas = receitas['valor'].sum()
+    total_receitas = receitas[
+        'valor'
+    ].sum()
 
 
     # ==========================================
@@ -371,7 +343,9 @@ def analises(request):
         df['tipo'] == 'despesa'
     ]
 
-    total_despesas = despesas['valor'].sum()
+    total_despesas = despesas[
+        'valor'
+    ].sum()
 
 
     # ==========================================
@@ -399,11 +373,9 @@ def analises(request):
             'valor'
         ].max()
 
-
         registro_maior_despesa = despesas.loc[
             despesas['valor'].idxmax()
         ]
-
 
         descricao_maior_despesa = (
             registro_maior_despesa['descricao']
@@ -465,15 +437,20 @@ def analises(request):
 
     contexto = {
 
-        'total_transacoes': total_transacoes,
+        'total_transacoes':
+            total_transacoes,
 
-        'total_receitas': total_receitas,
+        'total_receitas':
+            total_receitas,
 
-        'total_despesas': total_despesas,
+        'total_despesas':
+            total_despesas,
 
-        'media_despesas': media_despesas,
+        'media_despesas':
+            media_despesas,
 
-        'maior_despesa': maior_despesa,
+        'maior_despesa':
+            maior_despesa,
 
         'descricao_maior_despesa':
             descricao_maior_despesa,
@@ -484,6 +461,12 @@ def analises(request):
         'maiores_despesas':
             maiores_despesas,
 
+        'data_inicio':
+            data_inicio,
+
+        'data_fim':
+            data_fim,
+
     }
 
 
@@ -491,4 +474,84 @@ def analises(request):
         request,
         'analises.html',
         contexto
+    )
+
+
+def transacoes(request):
+
+    lista_transacoes = Transacao.objects.order_by(
+        '-data',
+        '-id'
+    )
+
+    return render(
+        request,
+        'transacoes.html',
+        {
+            'transacoes': lista_transacoes
+        }
+    )
+
+
+def editar_transacao(request, id):
+
+    transacao = Transacao.objects.get(
+        id=id
+    )
+
+
+    if request.method == 'POST':
+
+        form = TransacaoForm(
+            request.POST,
+            instance=transacao
+        )
+
+        if form.is_valid():
+
+            form.save()
+
+            return redirect(
+                'transacoes'
+            )
+
+    else:
+
+        form = TransacaoForm(
+            instance=transacao
+        )
+
+
+    return render(
+        request,
+        'editar_transacao.html',
+        {
+            'form': form,
+            'transacao': transacao
+        }
+    )
+
+
+def excluir_transacao(request, id):
+
+    transacao = Transacao.objects.get(
+        id=id
+    )
+
+
+    if request.method == 'POST':
+
+        transacao.delete()
+
+        return redirect(
+            'transacoes'
+        )
+
+
+    return render(
+        request,
+        'excluir_transacao.html',
+        {
+            'transacao': transacao
+        }
     )
