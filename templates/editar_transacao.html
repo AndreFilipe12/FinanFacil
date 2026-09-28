@@ -1,0 +1,402 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Transação - FinanFácil{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+
+    <div class="col-lg-8 col-xl-7">
+
+        <!-- CABEÇALHO -->
+        <div class="mb-4">
+
+            <div class="d-flex align-items-center gap-3 mb-2">
+
+                <div
+                    class="bg-primary-subtle text-primary rounded-3 d-flex align-items-center justify-content-center"
+                    style="width: 48px; height: 48px; font-size: 22px;"
+                >
+                    ✏️
+                </div>
+
+                <div>
+
+                    <h1 class="fw-bold mb-0">
+                        Editar transação
+                    </h1>
+
+                    <p class="text-muted mb-0">
+                        Atualize os dados da sua movimentação financeira.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- CARD PRINCIPAL -->
+        <div class="card border-0 shadow-sm">
+
+            <div class="card-body p-4 p-md-5">
+
+                <form method="POST">
+
+                    {% csrf_token %}
+
+
+                    <!-- TIPO -->
+                    <div class="mb-4">
+
+                        <label class="form-label fw-semibold mb-3">
+                            Tipo de transação
+                        </label>
+
+
+                        <div class="d-none">
+                            {{ form.tipo }}
+                        </div>
+
+
+                        <div class="row g-3">
+
+
+                            <!-- RECEITA -->
+                            <div class="col-md-6">
+
+                                <button
+                                    type="button"
+                                    id="btnReceita"
+                                    class="tipo-card w-100 text-start border rounded-3 p-3 bg-white"
+                                    onclick="selecionarTipo('receita')"
+                                >
+
+                                    <div class="d-flex align-items-center gap-3">
+
+                                        <div
+                                            class="tipo-icone receita-icone rounded-circle d-flex align-items-center justify-content-center"
+                                            style="width: 46px; height: 46px; font-size: 22px;"
+                                        >
+                                            ↑
+                                        </div>
+
+
+                                        <div>
+
+                                            <div class="fw-semibold">
+                                                Receita
+                                            </div>
+
+                                            <small class="text-muted">
+                                                Dinheiro que entra
+                                            </small>
+
+                                        </div>
+
+                                    </div>
+
+                                </button>
+
+                            </div>
+
+
+                            <!-- DESPESA -->
+                            <div class="col-md-6">
+
+                                <button
+                                    type="button"
+                                    id="btnDespesa"
+                                    class="tipo-card w-100 text-start border rounded-3 p-3 bg-white"
+                                    onclick="selecionarTipo('despesa')"
+                                >
+
+                                    <div class="d-flex align-items-center gap-3">
+
+                                        <div
+                                            class="tipo-icone despesa-icone rounded-circle d-flex align-items-center justify-content-center"
+                                            style="width: 46px; height: 46px; font-size: 22px;"
+                                        >
+                                            ↓
+                                        </div>
+
+
+                                        <div>
+
+                                            <div class="fw-semibold">
+                                                Despesa
+                                            </div>
+
+                                            <small class="text-muted">
+                                                Dinheiro que sai
+                                            </small>
+
+                                        </div>
+
+                                    </div>
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        {% if form.tipo.errors %}
+
+                            <div class="text-danger small mt-2">
+                                {{ form.tipo.errors }}
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- DESCRIÇÃO -->
+                    <div class="mb-4">
+
+                        <label class="form-label fw-semibold">
+                            Descrição
+                        </label>
+
+                        {{ form.descricao }}
+
+                        <div class="form-text">
+                            Informe o nome ou motivo da movimentação.
+                        </div>
+
+
+                        {% if form.descricao.errors %}
+
+                            <div class="text-danger small mt-1">
+                                {{ form.descricao.errors }}
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- VALOR -->
+                    <div class="mb-4">
+
+                        <label class="form-label fw-semibold">
+                            Valor da transação
+                        </label>
+
+
+                        <div class="input-group input-group-lg">
+
+                            <span class="input-group-text bg-light">
+                                R$
+                            </span>
+
+                            {{ form.valor }}
+
+                        </div>
+
+
+                        {% if form.valor.errors %}
+
+                            <div class="text-danger small mt-1">
+                                {{ form.valor.errors }}
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- DATA -->
+                    <div class="mb-4">
+
+                        <label class="form-label fw-semibold">
+                            Data da transação
+                        </label>
+
+                        {{ form.data }}
+
+
+                        {% if form.data.errors %}
+
+                            <div class="text-danger small mt-1">
+                                {{ form.data.errors }}
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <hr class="my-4">
+
+
+                    <!-- BOTÕES -->
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <a
+                            href="{% url 'transacoes' %}"
+                            class="btn btn-light border px-4"
+                        >
+                            Cancelar
+                        </a>
+
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary px-4 py-2"
+                        >
+                            Salvar alterações
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+        <!-- DICA -->
+        <div class="text-center mt-3">
+
+            <small class="text-muted">
+                💡 As alterações serão aplicadas à transação selecionada.
+            </small>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- CSS -->
+<style>
+
+    .tipo-card {
+
+        transition: all 0.2s ease;
+
+        cursor: pointer;
+
+    }
+
+
+    .tipo-card:hover {
+
+        transform: translateY(-2px);
+
+        box-shadow:
+            0 4px 12px rgba(0, 0, 0, 0.08);
+
+    }
+
+
+    .tipo-card.selecionado-receita {
+
+        border: 2px solid #198754 !important;
+
+        background-color: #f0fff7 !important;
+
+    }
+
+
+    .tipo-card.selecionado-despesa {
+
+        border: 2px solid #dc3545 !important;
+
+        background-color: #fff5f5 !important;
+
+    }
+
+
+    .receita-icone {
+
+        background-color: #d1e7dd;
+
+        color: #198754;
+
+    }
+
+
+    .despesa-icone {
+
+        background-color: #f8d7da;
+
+        color: #dc3545;
+
+    }
+
+</style>
+
+
+<!-- JAVASCRIPT -->
+<script>
+
+    function selecionarTipo(tipo) {
+
+        const campoTipo =
+            document.getElementById('id_tipo');
+
+        const btnReceita =
+            document.getElementById('btnReceita');
+
+        const btnDespesa =
+            document.getElementById('btnDespesa');
+
+
+        campoTipo.value = tipo;
+
+
+        btnReceita.classList.remove(
+            'selecionado-receita'
+        );
+
+        btnDespesa.classList.remove(
+            'selecionado-despesa'
+        );
+
+
+        if (tipo === 'receita') {
+
+            btnReceita.classList.add(
+                'selecionado-receita'
+            );
+
+        } else {
+
+            btnDespesa.classList.add(
+                'selecionado-despesa'
+            );
+
+        }
+
+    }
+
+
+    // Seleciona visualmente o tipo já cadastrado
+    document.addEventListener(
+        'DOMContentLoaded',
+        function() {
+
+            const campoTipo =
+                document.getElementById('id_tipo');
+
+            if (campoTipo.value) {
+
+                selecionarTipo(
+                    campoTipo.value
+                );
+
+            }
+
+        }
+    );
+
+</script>
+
+{% endblock %}

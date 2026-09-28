@@ -1,0 +1,612 @@
+{% extends 'base.html' %}
+
+{% load financeiro_extras %}
+
+
+{% block title %}
+Relatórios - FinanFácil
+{% endblock %}
+
+
+{% block content %}
+
+
+<!-- ========================================== -->
+<!-- CABEÇALHO -->
+<!-- ========================================== -->
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+
+        <h1 class="fw-bold mb-1">
+            Relatórios
+        </h1>
+
+        <p class="text-muted mb-0">
+            Acompanhe a evolução das suas finanças.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================== -->
+<!-- FILTRO DE PERÍODO -->
+<!-- ========================================== -->
+
+<div class="card border-0 shadow-sm mb-5">
+
+    <div class="card-body p-4">
+
+        <div class="mb-3">
+
+            <h5 class="fw-bold mb-1">
+                Filtrar período
+            </h5>
+
+            <p class="text-muted small mb-0">
+                Selecione o período que deseja analisar.
+            </p>
+
+        </div>
+
+
+        <form method="GET">
+
+            <div class="row g-3 align-items-end">
+
+
+                <!-- DATA INICIAL -->
+
+                <div class="col-md-4">
+
+                    <label
+                        for="data_inicio"
+                        class="form-label fw-semibold"
+                    >
+                        Data inicial
+                    </label>
+
+                    <input
+                        type="date"
+                        id="data_inicio"
+                        name="data_inicio"
+                        class="form-control"
+                        value="{{ data_inicio|default:'' }}"
+                    >
+
+                </div>
+
+
+                <!-- DATA FINAL -->
+
+                <div class="col-md-4">
+
+                    <label
+                        for="data_fim"
+                        class="form-label fw-semibold"
+                    >
+                        Data final
+                    </label>
+
+                    <input
+                        type="date"
+                        id="data_fim"
+                        name="data_fim"
+                        class="form-control"
+                        value="{{ data_fim|default:'' }}"
+                    >
+
+                </div>
+
+
+                <!-- BOTÕES -->
+
+                <div class="col-md-4">
+
+                    <div class="d-flex gap-2">
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                        >
+                            Filtrar
+                        </button>
+
+
+                        <a
+                            href="{% url 'relatorios' %}"
+                            class="btn btn-light border"
+                        >
+                            Limpar
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================== -->
+<!-- INDICADORES -->
+<!-- ========================================== -->
+
+<div class="row g-4 mb-5">
+
+
+    <!-- RECEITAS -->
+
+    <div class="col-md-4">
+
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-body p-4">
+
+                <p class="text-muted small fw-semibold mb-2">
+                    RECEITAS
+                </p>
+
+                <h2 class="fw-bold mb-3">
+
+                    R$
+                    {{ receitas|moeda_brasileira }}
+
+                </h2>
+
+                <div
+                    style="
+                        height: 4px;
+                        background-color: #198754;
+                        border-radius: 10px;
+                    "
+                ></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- DESPESAS -->
+
+    <div class="col-md-4">
+
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-body p-4">
+
+                <p class="text-muted small fw-semibold mb-2">
+                    DESPESAS
+                </p>
+
+                <h2 class="fw-bold mb-3">
+
+                    R$
+                    {{ despesas|moeda_brasileira }}
+
+                </h2>
+
+                <div
+                    style="
+                        height: 4px;
+                        background-color: #dc3545;
+                        border-radius: 10px;
+                    "
+                ></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- SALDO -->
+
+    <div class="col-md-4">
+
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-body p-4">
+
+                <p class="text-muted small fw-semibold mb-2">
+                    SALDO
+                </p>
+
+                <h2 class="fw-bold mb-3">
+
+                    R$
+                    {{ saldo|moeda_brasileira }}
+
+                </h2>
+
+                <div
+                    style="
+                        height: 4px;
+                        background-color: #0d6efd;
+                        border-radius: 10px;
+                    "
+                ></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<!-- ========================================== -->
+<!-- ÁREA DOS GRÁFICOS -->
+<!-- ========================================== -->
+
+<div class="row g-4">
+
+
+    <!-- ====================================== -->
+    <!-- RECEITAS X DESPESAS -->
+    <!-- ====================================== -->
+
+    <div class="col-lg-7">
+
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-body p-4">
+
+                <h4 class="fw-bold mb-1">
+                    Receitas x Despesas
+                </h4>
+
+                <p class="text-muted small mb-4">
+                    Comparação das movimentações financeiras.
+                </p>
+
+
+                <div style="height: 320px;">
+
+                    <canvas
+                        id="graficoReceitasDespesas"
+                    ></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ====================================== -->
+    <!-- EVOLUÇÃO -->
+    <!-- ====================================== -->
+
+    <div class="col-lg-5">
+
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-body p-4">
+
+                <h4 class="fw-bold mb-1">
+                    Evolução mensal
+                </h4>
+
+                <p class="text-muted small mb-4">
+                    Movimentação financeira ao longo dos meses.
+                </p>
+
+
+                <div style="height: 320px;">
+
+                    <canvas
+                        id="graficoEvolucao"
+                    ></canvas>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<!-- ========================================== -->
+<!-- CHART.JS -->
+<!-- ========================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<script>
+
+
+    // ==========================================
+    // DADOS VINDOS DO DJANGO
+    // ==========================================
+
+    const dadosGrafico =
+        {{ dados_grafico|safe }};
+
+
+    // ==========================================
+    // MESES
+    // ==========================================
+
+    const meses = [
+
+        ...new Set(
+
+            dadosGrafico.map(
+                item => item.mes
+            )
+
+        )
+
+    ];
+
+
+    // ==========================================
+    // RECEITAS
+    // ==========================================
+
+    const receitas = meses.map(
+        mes => {
+
+            const item =
+                dadosGrafico.find(
+
+                    item =>
+                        item.mes === mes &&
+                        item.tipo === 'receita'
+
+                );
+
+
+            return item
+                ? item.total
+                : 0;
+
+        }
+    );
+
+
+    // ==========================================
+    // DESPESAS
+    // ==========================================
+
+    const despesas = meses.map(
+        mes => {
+
+            const item =
+                dadosGrafico.find(
+
+                    item =>
+                        item.mes === mes &&
+                        item.tipo === 'despesa'
+
+                );
+
+
+            return item
+                ? item.total
+                : 0;
+
+        }
+    );
+
+
+    // ==========================================
+    // GRÁFICO
+    // RECEITAS X DESPESAS
+    // ==========================================
+
+    const contextoReceitasDespesas =
+        document.getElementById(
+            'graficoReceitasDespesas'
+        );
+
+
+    new Chart(
+
+        contextoReceitasDespesas,
+
+        {
+
+            type: 'bar',
+
+
+            data: {
+
+                labels: meses,
+
+
+                datasets: [
+
+                    {
+
+                        label: 'Receitas',
+
+                        data: receitas,
+
+                        backgroundColor: '#198754',
+
+                        borderRadius: 6
+
+                    },
+
+
+                    {
+
+                        label: 'Despesas',
+
+                        data: despesas,
+
+                        backgroundColor: '#dc3545',
+
+                        borderRadius: 6
+
+                    }
+
+                ]
+
+            },
+
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+
+                plugins: {
+
+                    legend: {
+
+                        position: 'bottom'
+
+                    }
+
+                },
+
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero: true
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    );
+
+
+    // ==========================================
+    // GRÁFICO
+    // EVOLUÇÃO MENSAL
+    // ==========================================
+
+    const contextoEvolucao =
+        document.getElementById(
+            'graficoEvolucao'
+        );
+
+
+    new Chart(
+
+        contextoEvolucao,
+
+        {
+
+            type: 'line',
+
+
+            data: {
+
+                labels: meses,
+
+
+                datasets: [
+
+                    {
+
+                        label: 'Receitas',
+
+                        data: receitas,
+
+                        borderColor: '#198754',
+
+                        backgroundColor:
+                            'rgba(25, 135, 84, 0.1)',
+
+                        tension: 0.3,
+
+                        fill: true
+
+                    },
+
+
+                    {
+
+                        label: 'Despesas',
+
+                        data: despesas,
+
+                        borderColor: '#dc3545',
+
+                        backgroundColor:
+                            'rgba(220, 53, 69, 0.1)',
+
+                        tension: 0.3,
+
+                        fill: true
+
+                    }
+
+                ]
+
+            },
+
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+
+                plugins: {
+
+                    legend: {
+
+                        position: 'bottom'
+
+                    }
+
+                },
+
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero: true
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    );
+
+
+</script>
+
+
+{% endblock %}

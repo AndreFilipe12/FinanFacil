@@ -1,0 +1,356 @@
+{% extends 'base.html' %}
+
+{% load financeiro_extras %}
+
+
+{% block title %}
+Análises - FinanFácil
+{% endblock %}
+
+
+{% block content %}
+
+
+<!-- ========================================== -->
+<!-- CABEÇALHO -->
+<!-- ========================================== -->
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+
+        <h1 class="fw-bold mb-1">
+            Análises
+        </h1>
+
+        <p class="text-muted mb-0">
+            Insights sobre o comportamento das suas finanças.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- ========================================== -->
+<!-- INDICADORES -->
+<!-- ========================================== -->
+
+<div class="row g-4 mb-5">
+
+
+    <!-- TRANSAÇÕES -->
+
+    <div class="col-md-6 col-xl-3">
+
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-body p-4">
+
+                <p class="text-muted small fw-semibold mb-2">
+                    TRANSAÇÕES
+                </p>
+
+                <h2 class="fw-bold mb-0">
+                    {{ total_transacoes }}
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- RECEITAS -->
+
+    <div class="col-md-6 col-xl-3">
+
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-body p-4">
+
+                <p class="text-muted small fw-semibold mb-2">
+                    RECEITAS
+                </p>
+
+                <h2 class="fw-bold mb-0">
+
+                    R$
+                    {{ total_receitas|moeda_brasileira }}
+
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- DESPESAS -->
+
+    <div class="col-md-6 col-xl-3">
+
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-body p-4">
+
+                <p class="text-muted small fw-semibold mb-2">
+                    DESPESAS
+                </p>
+
+                <h2 class="fw-bold mb-0">
+
+                    R$
+                    {{ total_despesas|moeda_brasileira }}
+
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MÉDIA -->
+
+    <div class="col-md-6 col-xl-3">
+
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-body p-4">
+
+                <p class="text-muted small fw-semibold mb-2">
+                    MÉDIA DAS DESPESAS
+                </p>
+
+                <h2 class="fw-bold mb-0">
+
+                    R$
+                    {{ media_despesas|moeda_brasileira }}
+
+                </h2>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<!-- ========================================== -->
+<!-- ANÁLISES PRINCIPAIS -->
+<!-- ========================================== -->
+
+<div class="row g-4 mb-5">
+
+
+    <!-- MAIOR DESPESA -->
+
+    <div class="col-lg-6">
+
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-body p-4">
+
+                <p class="text-muted small fw-semibold mb-2">
+                    MAIOR DESPESA
+                </p>
+
+                <h2 class="fw-bold mb-2">
+
+                    R$
+                    {{ maior_despesa|moeda_brasileira }}
+
+                </h2>
+
+                {% if descricao_maior_despesa %}
+
+                    <p class="text-muted mb-0">
+
+                        Transação:
+                        <strong>
+                            {{ descricao_maior_despesa }}
+                        </strong>
+
+                    </p>
+
+                {% else %}
+
+                    <p class="text-muted mb-0">
+                        Nenhuma despesa cadastrada.
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PARTICIPAÇÃO -->
+
+    <div class="col-lg-6">
+
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-body p-4">
+
+                <p class="text-muted small fw-semibold mb-2">
+                    PARTICIPAÇÃO DAS DESPESAS
+                </p>
+
+                <h2 class="fw-bold mb-2">
+
+                    {{ percentual_despesas|floatformat:1 }}%
+
+                </h2>
+
+                <p class="text-muted mb-0">
+
+                    Percentual das despesas em relação
+                    ao total movimentado.
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<!-- ========================================== -->
+<!-- MAIORES DESPESAS -->
+<!-- ========================================== -->
+
+<div class="card border-0 shadow-sm">
+
+    <div class="card-body p-4">
+
+
+        <div class="mb-4">
+
+            <h4 class="fw-bold mb-1">
+                Maiores despesas
+            </h4>
+
+            <p class="text-muted small mb-0">
+                As cinco maiores despesas cadastradas.
+            </p>
+
+        </div>
+
+
+        {% if maiores_despesas %}
+
+
+            <div class="table-responsive">
+
+                <table class="table align-middle mb-0">
+
+
+                    <thead>
+
+                        <tr class="text-muted small">
+
+                            <th class="border-0">
+                                DESCRIÇÃO
+                            </th>
+
+                            <th class="border-0">
+                                DATA
+                            </th>
+
+                            <th class="border-0 text-end">
+                                VALOR
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                        {% for despesa in maiores_despesas %}
+
+                            <tr>
+
+                                <td class="py-3">
+
+                                    <div class="fw-semibold">
+
+                                        {{ despesa.descricao }}
+
+                                    </div>
+
+                                </td>
+
+
+                                <td class="text-muted">
+
+                                    {{ despesa.data|date:"d/m/Y" }}
+
+                                </td>
+
+
+                                <td class="text-end">
+
+                                    <span class="text-danger fw-semibold">
+
+                                        - R$
+                                        {{ despesa.valor|moeda_brasileira }}
+
+                                    </span>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+        {% else %}
+
+
+            <div class="text-center py-5">
+
+                <h5 class="fw-semibold">
+                    Nenhuma despesa cadastrada
+                </h5>
+
+                <p class="text-muted mb-0">
+                    Cadastre algumas despesas para visualizar as análises.
+                </p>
+
+            </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+</div>
+
+
+{% endblock %}

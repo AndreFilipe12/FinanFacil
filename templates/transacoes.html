@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+
+{% block title %}Transações - FinanFácil{% endblock %}
+
+{% block content %}
+
+<!-- CABEÇALHO -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+
+        <h1 class="fw-bold mb-1">
+            Transações
+        </h1>
+
+        <p class="text-muted mb-0">
+            Consulte e gerencie suas movimentações financeiras.
+        </p>
+
+    </div>
+
+
+    <a href="{% url 'nova_transacao' %}" class="btn btn-primary">
+        + Nova transação
+    </a>
+
+</div>
+
+
+<!-- CARD PRINCIPAL -->
+<div class="card border-0 shadow-sm">
+
+    <div class="card-body p-4">
+
+
+        {% if transacoes %}
+
+        <!-- CABEÇALHO DA TABELA -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <div>
+
+                <h4 class="fw-bold mb-1">
+                    Todas as transações
+                </h4>
+
+                <p class="text-muted small mb-0">
+                    Histórico das suas movimentações financeiras.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- TABELA -->
+        <div class="table-responsive">
+
+            <table class="table align-middle mb-0">
+
+                <thead>
+
+                    <tr class="text-muted small">
+
+                        <th class="border-0">
+                            TRANSAÇÃO
+                        </th>
+
+                        <th class="border-0">
+                            TIPO
+                        </th>
+
+                        <th class="border-0 text-end">
+                            VALOR
+                        </th>
+
+                        <th class="border-0 text-end">
+                            DATA
+                        </th>
+
+                        <th class="border-0 text-end">
+                            AÇÕES
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for transacao in transacoes %}
+
+                    <tr>
+
+
+                        <!-- TRANSAÇÃO -->
+                        <td class="py-3">
+
+                            <div class="d-flex align-items-center">
+
+                                {% if transacao.tipo == 'receita' %}
+
+                                <div class="me-3 rounded-circle bg-success-subtle d-flex align-items-center justify-content-center"
+                                    style="width: 40px; height: 40px;">
+
+                                    <span class="text-success fw-bold">
+                                        ↑
+                                    </span>
+
+                                </div>
+
+                                {% else %}
+
+                                <div class="me-3 rounded-circle bg-danger-subtle d-flex align-items-center justify-content-center"
+                                    style="width: 40px; height: 40px;">
+
+                                    <span class="text-danger fw-bold">
+                                        ↓
+                                    </span>
+
+                                </div>
+
+                                {% endif %}
+
+
+                                <div>
+
+                                    <div class="fw-semibold">
+                                        {{ transacao.descricao }}
+                                    </div>
+
+                                    <small class="text-muted">
+                                        Movimentação financeira
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <!-- TIPO -->
+                        <td>
+
+                            {% if transacao.tipo == 'receita' %}
+
+                            <span class="text-success fw-semibold">
+                                Receita
+                            </span>
+
+                            {% else %}
+
+                            <span class="text-danger fw-semibold">
+                                Despesa
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- VALOR -->
+                        <td class="text-end">
+
+                            {% if transacao.tipo == 'receita' %}
+
+                            <span class="text-success fw-semibold">
+                                + R$ {{ transacao.valor|floatformat:2 }}
+                            </span>
+
+                            {% else %}
+
+                            <span class="text-danger fw-semibold">
+                                - R$ {{ transacao.valor|floatformat:2 }}
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- DATA -->
+                        <td class="text-end text-muted">
+
+                            {{ transacao.data|date:"d/m/Y" }}
+
+                        </td>
+
+
+                        <!-- AÇÕES -->
+                        <td class="text-end">
+
+                            <a href="{% url 'editar_transacao' transacao.id %}" class="btn btn-sm btn-light border">
+                                Editar
+                            </a>
+
+                            <a href="{% url 'excluir_transacao' transacao.id %}"
+                                class="btn btn-sm btn-light border text-danger">
+                                Excluir
+                            </a>
+
+                        </td>
+
+                        {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        {% else %}
+
+
+        <!-- SEM TRANSAÇÕES -->
+        <div class="text-center py-5">
+
+            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3"
+                style="width: 64px; height: 64px;">
+                💳
+            </div>
+
+
+            <h5 class="fw-semibold">
+                Nenhuma transação cadastrada
+            </h5>
+
+
+            <p class="text-muted">
+                Comece registrando sua primeira receita ou despesa.
+            </p>
+
+
+            <a href="{% url 'nova_transacao' %}" class="btn btn-primary">
+                + Nova transação
+            </a>
+
+        </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+</div>
+
+{% endblock %}
