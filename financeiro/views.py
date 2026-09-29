@@ -284,6 +284,18 @@ def analises(request):
 
             'maiores_despesas': [],
 
+            'receitas_mes_atual': 0,
+
+            'receitas_mes_anterior': 0,
+
+            'variacao_receitas': 0,
+
+            'despesas_mes_atual': 0,
+
+            'despesas_mes_anterior': 0,
+
+            'variacao_despesas': 0,
+
             'data_inicio': data_inicio,
 
             'data_fim': data_fim,
@@ -312,6 +324,15 @@ def analises(request):
 
     df['valor'] = pd.to_numeric(
         df['valor']
+    )
+
+
+    # ==========================================
+    # CONVERTE DATA
+    # ==========================================
+
+    df['data'] = pd.to_datetime(
+        df['data']
     )
 
 
@@ -432,6 +453,107 @@ def analises(request):
 
 
     # ==========================================
+    # COMPARAÇÃO MENSAL
+    # ==========================================
+
+    df['mes'] = df['data'].dt.to_period('M')
+
+
+    ultimo_mes = df['mes'].max()
+
+
+    mes_anterior = (
+        ultimo_mes - 1
+    )
+
+
+    # ==========================================
+    # DADOS DO ÚLTIMO MÊS
+    # ==========================================
+
+    dados_mes_atual = df[
+        df['mes'] == ultimo_mes
+    ]
+
+
+    # ==========================================
+    # DADOS DO MÊS ANTERIOR
+    # ==========================================
+
+    dados_mes_anterior = df[
+        df['mes'] == mes_anterior
+    ]
+
+
+    # ==========================================
+    # RECEITAS DOS MESES
+    # ==========================================
+
+    receitas_mes_atual = dados_mes_atual[
+        dados_mes_atual['tipo'] == 'receita'
+    ]['valor'].sum()
+
+
+    receitas_mes_anterior = dados_mes_anterior[
+        dados_mes_anterior['tipo'] == 'receita'
+    ]['valor'].sum()
+
+
+    # ==========================================
+    # DESPESAS DOS MESES
+    # ==========================================
+
+    despesas_mes_atual = dados_mes_atual[
+        dados_mes_atual['tipo'] == 'despesa'
+    ]['valor'].sum()
+
+
+    despesas_mes_anterior = dados_mes_anterior[
+        dados_mes_anterior['tipo'] == 'despesa'
+    ]['valor'].sum()
+
+
+    # ==========================================
+    # VARIAÇÃO DAS RECEITAS
+    # ==========================================
+
+    if receitas_mes_anterior > 0:
+
+        variacao_receitas = (
+            (
+                receitas_mes_atual -
+                receitas_mes_anterior
+            )
+            /
+            receitas_mes_anterior
+        ) * 100
+
+    else:
+
+        variacao_receitas = 0
+
+
+    # ==========================================
+    # VARIAÇÃO DAS DESPESAS
+    # ==========================================
+
+    if despesas_mes_anterior > 0:
+
+        variacao_despesas = (
+            (
+                despesas_mes_atual -
+                despesas_mes_anterior
+            )
+            /
+            despesas_mes_anterior
+        ) * 100
+
+    else:
+
+        variacao_despesas = 0
+
+
+    # ==========================================
     # CONTEXTO
     # ==========================================
 
@@ -460,6 +582,24 @@ def analises(request):
 
         'maiores_despesas':
             maiores_despesas,
+
+        'receitas_mes_atual':
+            receitas_mes_atual,
+
+        'receitas_mes_anterior':
+            receitas_mes_anterior,
+
+        'variacao_receitas':
+            variacao_receitas,
+
+        'despesas_mes_atual':
+            despesas_mes_atual,
+
+        'despesas_mes_anterior':
+            despesas_mes_anterior,
+
+        'variacao_despesas':
+            variacao_despesas,
 
         'data_inicio':
             data_inicio,

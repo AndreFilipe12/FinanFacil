@@ -247,6 +247,123 @@ Análises - FinanFácil
 
 </div>
 
+<!-- COMPARAÇÃO MENSAL -->
+<div class="row g-4 mb-5">
+
+    <!-- RECEITAS -->
+    <div class="col-lg-6">
+
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-body p-4">
+
+                <p class="text-muted small fw-semibold mb-2">
+                    COMPARAÇÃO DE RECEITAS
+                </p>
+
+                <h4 class="fw-bold mb-3">
+                    R$ {{ receitas_mes_atual|moeda_brasileira }}
+                </h4>
+
+                <p class="text-muted mb-2">
+                    Mês anterior:
+                    <strong>
+                        R$ {{ receitas_mes_anterior|moeda_brasileira }}
+                    </strong>
+                </p>
+
+                {% if variacao_receitas > 0 %}
+
+                    <span class="text-success fw-semibold">
+                        ↑ {{ variacao_receitas|floatformat:1 }}%
+                    </span>
+
+                    <span class="text-muted small">
+                        em relação ao mês anterior
+                    </span>
+
+                {% elif variacao_receitas < 0 %}
+
+                    <span class="text-danger fw-semibold">
+                        ↓ {{ variacao_receitas|floatformat:1 }}%
+                    </span>
+
+                    <span class="text-muted small">
+                        em relação ao mês anterior
+                    </span>
+
+                {% else %}
+
+                    <span class="text-muted fw-semibold">
+                        Sem variação
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- DESPESAS -->
+    <div class="col-lg-6">
+
+        <div class="card border-0 shadow-sm h-100">
+
+            <div class="card-body p-4">
+
+                <p class="text-muted small fw-semibold mb-2">
+                    COMPARAÇÃO DE DESPESAS
+                </p>
+
+                <h4 class="fw-bold mb-3">
+                    R$ {{ despesas_mes_atual|moeda_brasileira }}
+                </h4>
+
+                <p class="text-muted mb-2">
+                    Mês anterior:
+                    <strong>
+                        R$ {{ despesas_mes_anterior|moeda_brasileira }}
+                    </strong>
+                </p>
+
+                {% if variacao_despesas > 0 %}
+
+                    <span class="text-danger fw-semibold">
+                        ↑ {{ variacao_despesas|floatformat:1 }}%
+                    </span>
+
+                    <span class="text-muted small">
+                        em relação ao mês anterior
+                    </span>
+
+                {% elif variacao_despesas < 0 %}
+
+                    <span class="text-success fw-semibold">
+                        ↓ {{ variacao_despesas|floatformat:1 }}%
+                    </span>
+
+                    <span class="text-muted small">
+                        em relação ao mês anterior
+                    </span>
+
+                {% else %}
+
+                    <span class="text-muted fw-semibold">
+                        Sem variação
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 
 <!-- ========================================== -->
 <!-- ANÁLISES PRINCIPAIS -->
