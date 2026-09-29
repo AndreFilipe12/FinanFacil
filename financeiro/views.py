@@ -296,6 +296,10 @@ def analises(request):
 
             'variacao_despesas': 0,
 
+            'maior_gasto_diario': 0,
+
+            'data_maior_gasto': None,
+
             'data_inicio': data_inicio,
 
             'data_fim': data_fim,
@@ -453,6 +457,36 @@ def analises(request):
 
 
     # ==========================================
+    # ANÁLISE DE GASTOS POR DIA
+    # ==========================================
+
+    despesas_por_dia = (
+        despesas
+        .groupby('data')['valor']
+        .sum()
+    )
+
+
+    # ==========================================
+    # MAIOR GASTO EM UM ÚNICO DIA
+    # ==========================================
+
+    if not despesas_por_dia.empty:
+
+        maior_gasto_diario = despesas_por_dia.max()
+
+        data_maior_gasto = (
+            despesas_por_dia.idxmax()
+        )
+
+    else:
+
+        maior_gasto_diario = 0
+
+        data_maior_gasto = None
+
+
+    # ==========================================
     # COMPARAÇÃO MENSAL
     # ==========================================
 
@@ -600,6 +634,12 @@ def analises(request):
 
         'variacao_despesas':
             variacao_despesas,
+
+        'maior_gasto_diario':
+            maior_gasto_diario,
+
+        'data_maior_gasto':
+            data_maior_gasto,
 
         'data_inicio':
             data_inicio,
