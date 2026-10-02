@@ -1,77 +1,38 @@
 {% extends 'base.html' %}
-
 {% load financeiro_extras %}
-
-
-{% block title %}
-Análises - FinanFácil
-{% endblock %}
-
 
 {% block content %}
 
+<div class="container-fluid">
 
-<!-- ========================================== -->
-<!-- CABEÇALHO -->
-<!-- ========================================== -->
+    <!-- CABEÇALHO -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-
-    <div>
-
-        <h1 class="fw-bold mb-1">
-            Análises
-        </h1>
-
-        <p class="text-muted mb-0">
-            Insights sobre o comportamento das suas finanças.
-        </p>
+        <div>
+            <h2 class="fw-bold mb-1">Análises</h2>
+            <p class="text-muted mb-0">
+                Análise detalhada da sua movimentação financeira
+            </p>
+        </div>
 
     </div>
 
-</div>
 
+    <!-- FILTRO DE PERÍODO -->
+    <div class="card shadow-sm border-0 mb-4">
 
-<!-- ========================================== -->
-<!-- FILTRO DE PERÍODO -->
-<!-- ========================================== -->
+        <div class="card-body">
 
-<div class="card border-0 shadow-sm mb-5">
-
-    <div class="card-body p-4">
-
-        <div class="mb-3">
-
-            <h5 class="fw-bold mb-1">
-                Filtrar período
-            </h5>
-
-            <p class="text-muted small mb-0">
-                Selecione o período que deseja analisar.
-            </p>
-
-        </div>
-
-
-        <form method="GET">
-
-            <div class="row g-3 align-items-end">
-
-
-                <!-- DATA INICIAL -->
+            <form method="GET" class="row g-3 align-items-end">
 
                 <div class="col-md-4">
 
-                    <label
-                        for="data_inicio"
-                        class="form-label fw-semibold"
-                    >
+                    <label class="form-label fw-semibold">
                         Data inicial
                     </label>
 
                     <input
                         type="date"
-                        id="data_inicio"
                         name="data_inicio"
                         class="form-control"
                         value="{{ data_inicio|default:'' }}"
@@ -80,20 +41,14 @@ Análises - FinanFácil
                 </div>
 
 
-                <!-- DATA FINAL -->
-
                 <div class="col-md-4">
 
-                    <label
-                        for="data_fim"
-                        class="form-label fw-semibold"
-                    >
+                    <label class="form-label fw-semibold">
                         Data final
                     </label>
 
                     <input
                         type="date"
-                        id="data_fim"
                         name="data_fim"
                         class="form-control"
                         value="{{ data_fim|default:'' }}"
@@ -102,89 +57,296 @@ Análises - FinanFácil
                 </div>
 
 
-                <!-- BOTÕES -->
-
                 <div class="col-md-4">
 
-                    <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-dark w-100">
+                        Filtrar período
+                    </button>
 
-                        <button
-                            type="submit"
-                            class="btn btn-primary"
-                        >
-                            Filtrar
-                        </button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
 
 
-                        <a
-                            href="{% url 'analises' %}"
-                            class="btn btn-light border"
-                        >
-                            Limpar
-                        </a>
+    <!-- INDICADORES PRINCIPAIS -->
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-3">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <p class="text-muted mb-2">
+                        TRANSAÇÕES
+                    </p>
+
+                    <h3 class="fw-bold mb-0">
+                        {{ total_transacoes }}
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <p class="text-muted mb-2">
+                        RECEITAS
+                    </p>
+
+                    <h3 class="fw-bold text-success mb-0">
+                        R$ {{ total_receitas|moeda_brasileira }}
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <p class="text-muted mb-2">
+                        DESPESAS
+                    </p>
+
+                    <h3 class="fw-bold text-danger mb-0">
+                        R$ {{ total_despesas|moeda_brasileira }}
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <p class="text-muted mb-2">
+                        MÉDIA DAS DESPESAS
+                    </p>
+
+                    <h3 class="fw-bold mb-0">
+                        R$ {{ media_despesas|moeda_brasileira }}
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- COMPARAÇÃO MENSAL -->
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-6">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <p class="text-muted mb-2">
+                        VARIAÇÃO DAS RECEITAS
+                    </p>
+
+                    <h3 class="fw-bold mb-2">
+
+                        {% if variacao_receitas > 0 %}
+
+                            <span class="text-success">
+                                +{{ variacao_receitas|floatformat:2 }}%
+                            </span>
+
+                        {% elif variacao_receitas < 0 %}
+
+                            <span class="text-danger">
+                                {{ variacao_receitas|floatformat:2 }}%
+                            </span>
+
+                        {% else %}
+
+                            <span class="text-muted">
+                                0,00%
+                            </span>
+
+                        {% endif %}
+
+                    </h3>
+
+                    <p class="text-muted mb-0">
+                        Comparação entre o último mês e o mês anterior.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-6">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <p class="text-muted mb-2">
+                        VARIAÇÃO DAS DESPESAS
+                    </p>
+
+                    <h3 class="fw-bold mb-2">
+
+                        {% if variacao_despesas > 0 %}
+
+                            <span class="text-danger">
+                                +{{ variacao_despesas|floatformat:2 }}%
+                            </span>
+
+                        {% elif variacao_despesas < 0 %}
+
+                            <span class="text-success">
+                                {{ variacao_despesas|floatformat:2 }}%
+                            </span>
+
+                        {% else %}
+
+                            <span class="text-muted">
+                                0,00%
+                            </span>
+
+                        {% endif %}
+
+                    </h3>
+
+                    <p class="text-muted mb-0">
+                        Comparação entre o último mês e o mês anterior.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ANÁLISE DE GASTOS DIÁRIOS -->
+    <div class="mb-4">
+
+        <h5 class="fw-bold mb-3">
+            ANÁLISE DE GASTOS DIÁRIOS
+        </h5>
+
+        <div class="row g-4">
+
+            <div class="col-lg-4">
+
+                <div class="card shadow-sm border-0 h-100">
+
+                    <div class="card-body">
+
+                        <p class="text-muted mb-2">
+                            MAIOR GASTO EM UM DIA
+                        </p>
+
+                        <h3 class="fw-bold text-danger mb-2">
+                            R$ {{ maior_gasto_diario|moeda_brasileira }}
+                        </h3>
+
+                        {% if data_maior_gasto %}
+
+                            <p class="text-muted mb-0">
+                                Data:
+                                {{ data_maior_gasto|date:"d/m/Y" }}
+                            </p>
+
+                        {% else %}
+
+                            <p class="text-muted mb-0">
+                                Nenhuma despesa registrada.
+                            </p>
+
+                        {% endif %}
 
                     </div>
 
                 </div>
 
+            </div>
+
+
+            <div class="col-lg-4">
+
+                <div class="card shadow-sm border-0 h-100">
+
+                    <div class="card-body">
+
+                        <p class="text-muted mb-2">
+                            MÉDIA DIÁRIA DE DESPESAS
+                        </p>
+
+                        <h3 class="fw-bold mb-2">
+                            R$ {{ media_diaria|moeda_brasileira }}
+                        </h3>
+
+                        <p class="text-muted mb-0">
+                            Média dos gastos nos dias em que houve despesas.
+                        </p>
+
+                    </div>
+
+                </div>
 
             </div>
 
-        </form>
 
-    </div>
+            <div class="col-lg-4">
 
-</div>
+                <div class="card shadow-sm border-0 h-100">
 
+                    <div class="card-body">
 
-<!-- ========================================== -->
-<!-- INDICADORES -->
-<!-- ========================================== -->
+                        <p class="text-muted mb-2">
+                            DIAS COM DESPESAS
+                        </p>
 
-<div class="row g-4 mb-5">
+                        <h3 class="fw-bold mb-2">
+                            {{ dias_com_despesas }}
+                        </h3>
 
+                        <p class="text-muted mb-0">
+                            Dias diferentes com pelo menos uma despesa.
+                        </p>
 
-    <!-- TRANSAÇÕES -->
+                    </div>
 
-    <div class="col-md-6 col-xl-3">
-
-        <div class="card border-0 shadow-sm h-100">
-
-            <div class="card-body p-4">
-
-                <p class="text-muted small fw-semibold mb-2">
-                    TRANSAÇÕES
-                </p>
-
-                <h2 class="fw-bold mb-0">
-                    {{ total_transacoes }}
-                </h2>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- RECEITAS -->
-
-    <div class="col-md-6 col-xl-3">
-
-        <div class="card border-0 shadow-sm h-100">
-
-            <div class="card-body p-4">
-
-                <p class="text-muted small fw-semibold mb-2">
-                    RECEITAS
-                </p>
-
-                <h2 class="fw-bold mb-0">
-
-                    R$
-                    {{ total_receitas|moeda_brasileira }}
-
-                </h2>
+                </div>
 
             </div>
 
@@ -193,298 +355,26 @@ Análises - FinanFácil
     </div>
 
 
-    <!-- DESPESAS -->
+    <!-- TENDÊNCIA MENSAL -->
+    <div class="card shadow-sm border-0 mb-4">
 
-    <div class="col-md-6 col-xl-3">
+        <div class="card-body">
 
-        <div class="card border-0 shadow-sm h-100">
+            <div class="mb-3">
 
-            <div class="card-body p-4">
-
-                <p class="text-muted small fw-semibold mb-2">
-                    DESPESAS
-                </p>
-
-                <h2 class="fw-bold mb-0">
-
-                    R$
-                    {{ total_despesas|moeda_brasileira }}
-
-                </h2>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- MÉDIA -->
-
-    <div class="col-md-6 col-xl-3">
-
-        <div class="card border-0 shadow-sm h-100">
-
-            <div class="card-body p-4">
-
-                <p class="text-muted small fw-semibold mb-2">
-                    MÉDIA DAS DESPESAS
-                </p>
-
-                <h2 class="fw-bold mb-0">
-
-                    R$
-                    {{ media_despesas|moeda_brasileira }}
-
-                </h2>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-</div>
-
-<!-- COMPARAÇÃO MENSAL -->
-<div class="row g-4 mb-5">
-
-    <!-- RECEITAS -->
-    <div class="col-lg-6">
-
-        <div class="card border-0 shadow-sm h-100">
-
-            <div class="card-body p-4">
-
-                <p class="text-muted small fw-semibold mb-2">
-                    COMPARAÇÃO DE RECEITAS
-                </p>
-
-                <h4 class="fw-bold mb-3">
-                    R$ {{ receitas_mes_atual|moeda_brasileira }}
-                </h4>
-
-                <p class="text-muted mb-2">
-                    Mês anterior:
-                    <strong>
-                        R$ {{ receitas_mes_anterior|moeda_brasileira }}
-                    </strong>
-                </p>
-
-                {% if variacao_receitas > 0 %}
-
-                    <span class="text-success fw-semibold">
-                        ↑ {{ variacao_receitas|floatformat:1 }}%
-                    </span>
-
-                    <span class="text-muted small">
-                        em relação ao mês anterior
-                    </span>
-
-                {% elif variacao_receitas < 0 %}
-
-                    <span class="text-danger fw-semibold">
-                        ↓ {{ variacao_receitas|floatformat:1 }}%
-                    </span>
-
-                    <span class="text-muted small">
-                        em relação ao mês anterior
-                    </span>
-
-                {% else %}
-
-                    <span class="text-muted fw-semibold">
-                        Sem variação
-                    </span>
-
-                {% endif %}
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- DESPESAS -->
-    <div class="col-lg-6">
-
-        <div class="card border-0 shadow-sm h-100">
-
-            <div class="card-body p-4">
-
-                <p class="text-muted small fw-semibold mb-2">
-                    COMPARAÇÃO DE DESPESAS
-                </p>
-
-                <h4 class="fw-bold mb-3">
-                    R$ {{ despesas_mes_atual|moeda_brasileira }}
-                </h4>
-
-                <p class="text-muted mb-2">
-                    Mês anterior:
-                    <strong>
-                        R$ {{ despesas_mes_anterior|moeda_brasileira }}
-                    </strong>
-                </p>
-
-                {% if variacao_despesas > 0 %}
-
-                    <span class="text-danger fw-semibold">
-                        ↑ {{ variacao_despesas|floatformat:1 }}%
-                    </span>
-
-                    <span class="text-muted small">
-                        em relação ao mês anterior
-                    </span>
-
-                {% elif variacao_despesas < 0 %}
-
-                    <span class="text-success fw-semibold">
-                        ↓ {{ variacao_despesas|floatformat:1 }}%
-                    </span>
-
-                    <span class="text-muted small">
-                        em relação ao mês anterior
-                    </span>
-
-                {% else %}
-
-                    <span class="text-muted fw-semibold">
-                        Sem variação
-                    </span>
-
-                {% endif %}
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div> 
-
-<!-- ANÁLISE DE GASTOS DIÁRIOS -->
-<div class="row g-4 mb-5">
-
-    <div class="col-lg-6">
-
-        <div class="card border-0 shadow-sm h-100">
-
-            <div class="card-body p-4">
-
-                <p class="text-muted small fw-semibold mb-2">
-                    MAIOR GASTO EM UM DIA
-                </p>
-
-                <h2 class="fw-bold mb-2">
-                    R$ {{ maior_gasto_diario|moeda_brasileira }}
-                </h2>
-
-                {% if data_maior_gasto %}
-
-                    <p class="text-muted mb-0">
-                        Data:
-                        <strong>
-                            {{ data_maior_gasto|date:"d/m/Y" }}
-                        </strong>
-                    </p>
-
-                {% else %}
-
-                    <p class="text-muted mb-0">
-                        Nenhuma despesa cadastrada.
-                    </p>
-
-                {% endif %}
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-<!-- ========================================== -->
-<!-- ANÁLISES PRINCIPAIS -->
-<!-- ========================================== -->
-
-<div class="row g-4 mb-5">
-
-
-    <!-- MAIOR DESPESA -->
-
-    <div class="col-lg-6">
-
-        <div class="card border-0 shadow-sm h-100">
-
-            <div class="card-body p-4">
-
-                <p class="text-muted small fw-semibold mb-2">
-                    MAIOR DESPESA
-                </p>
-
-                <h2 class="fw-bold mb-2">
-
-                    R$
-                    {{ maior_despesa|moeda_brasileira }}
-
-                </h2>
-
-
-                {% if descricao_maior_despesa %}
-
-                    <p class="text-muted mb-0">
-
-                        Transação:
-
-                        <strong>
-                            {{ descricao_maior_despesa }}
-                        </strong>
-
-                    </p>
-
-                {% else %}
-
-                    <p class="text-muted mb-0">
-                        Nenhuma despesa cadastrada.
-                    </p>
-
-                {% endif %}
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- PARTICIPAÇÃO -->
-
-    <div class="col-lg-6">
-
-        <div class="card border-0 shadow-sm h-100">
-
-            <div class="card-body p-4">
-
-                <p class="text-muted small fw-semibold mb-2">
-                    PARTICIPAÇÃO DAS DESPESAS
-                </p>
-
-                <h2 class="fw-bold mb-2">
-
-                    {{ percentual_despesas|floatformat:1 }}%
-
-                </h2>
+                <h5 class="fw-bold mb-1">
+                    TENDÊNCIA DE DESPESAS
+                </h5>
 
                 <p class="text-muted mb-0">
-
-                    Percentual das despesas em relação
-                    ao total movimentado.
-
+                    Evolução das despesas ao longo dos meses.
                 </p>
+
+            </div>
+
+            <div style="height: 350px;">
+
+                <canvas id="graficoTendenciaMensal"></canvas>
 
             </div>
 
@@ -493,100 +383,125 @@ Análises - FinanFácil
     </div>
 
 
-</div>
+    <!-- ANÁLISE PRINCIPAL -->
+    <div class="row g-4 mb-4">
 
+        <div class="col-md-6">
 
-<!-- ========================================== -->
-<!-- MAIORES DESPESAS -->
-<!-- ========================================== -->
+            <div class="card shadow-sm border-0 h-100">
 
-<div class="card border-0 shadow-sm">
+                <div class="card-body">
 
-    <div class="card-body p-4">
+                    <p class="text-muted mb-2">
+                        MAIOR DESPESA
+                    </p>
 
+                    <h3 class="fw-bold text-danger">
+                        R$ {{ maior_despesa|moeda_brasileira }}
+                    </h3>
 
-        <div class="mb-4">
+                    <p class="mb-0">
+                        {{ descricao_maior_despesa }}
+                    </p>
 
-            <h4 class="fw-bold mb-1">
-                Maiores despesas
-            </h4>
+                </div>
 
-            <p class="text-muted small mb-0">
-                As cinco maiores despesas do período.
-            </p>
+            </div>
 
         </div>
 
 
-        {% if maiores_despesas %}
+        <div class="col-md-6">
 
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <p class="text-muted mb-2">
+                        PARTICIPAÇÃO DAS DESPESAS
+                    </p>
+
+                    <h3 class="fw-bold">
+                        {{ percentual_despesas|floatformat:2 }}%
+                    </h3>
+
+                    <p class="text-muted mb-0">
+                        Percentual das despesas sobre toda a movimentação financeira.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- TOP 5 DESPESAS -->
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-body">
+
+            <h5 class="fw-bold mb-3">
+                TOP 5 MAIORES DESPESAS
+            </h5>
 
             <div class="table-responsive">
 
-                <table class="table align-middle mb-0">
-
+                <table class="table table-hover align-middle">
 
                     <thead>
 
-                        <tr class="text-muted small">
+                        <tr>
 
-                            <th class="border-0">
-                                DESCRIÇÃO
+                            <th>
+                                Descrição
                             </th>
 
-                            <th class="border-0">
-                                DATA
+                            <th>
+                                Data
                             </th>
 
-                            <th class="border-0 text-end">
-                                VALOR
+                            <th class="text-end">
+                                Valor
                             </th>
 
                         </tr>
 
                     </thead>
 
-
                     <tbody>
 
-
-                        {% for despesa in maiores_despesas %}
+                        {% for despesa in top_despesas %}
 
                             <tr>
 
-                                <td class="py-3">
-
-                                    <div class="fw-semibold">
-
-                                        {{ despesa.descricao }}
-
-                                    </div>
-
+                                <td>
+                                    {{ despesa.descricao }}
                                 </td>
 
-
-                                <td class="text-muted">
-
+                                <td>
                                     {{ despesa.data|date:"d/m/Y" }}
-
                                 </td>
 
+                                <td class="text-end fw-semibold text-danger">
+                                    R$ {{ despesa.valor|moeda_brasileira }}
+                                </td>
 
-                                <td class="text-end">
+                            </tr>
 
-                                    <span class="text-danger fw-semibold">
+                        {% empty %}
 
-                                        - R$
-                                        {{ despesa.valor|moeda_brasileira }}
+                            <tr>
 
-                                    </span>
-
+                                <td colspan="3" class="text-center text-muted">
+                                    Nenhuma despesa encontrada.
                                 </td>
 
                             </tr>
 
                         {% endfor %}
-
 
                     </tbody>
 
@@ -594,29 +509,105 @@ Análises - FinanFácil
 
             </div>
 
-
-        {% else %}
-
-
-            <div class="text-center py-5">
-
-                <h5 class="fw-semibold">
-                    Nenhuma despesa encontrada
-                </h5>
-
-                <p class="text-muted mb-0">
-                    Não existem despesas no período selecionado.
-                </p>
-
-            </div>
-
-
-        {% endif %}
-
+        </div>
 
     </div>
 
 </div>
 
+
+<!-- CHART.JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+    const dadosTendenciaMensal = {{ tendencia_mensal|safe }};
+
+    const labelsTendencia = dadosTendenciaMensal.map(item => item.mes);
+
+    const valoresTendencia = dadosTendenciaMensal.map(item => item.valor);
+
+
+    const canvasTendencia = document.getElementById(
+        'graficoTendenciaMensal'
+    );
+
+
+    if (canvasTendencia) {
+
+        new Chart(canvasTendencia, {
+
+            type: 'line',
+
+            data: {
+
+                labels: labelsTendencia,
+
+                datasets: [
+
+                    {
+
+                        label: 'Despesas',
+
+                        data: valoresTendencia,
+
+                        tension: 0.3,
+
+                        fill: false
+
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero: true,
+
+                        ticks: {
+
+                            callback: function(value) {
+
+                                return 'R$ ' + value.toLocaleString(
+                                    'pt-BR',
+                                    {
+                                        minimumFractionDigits: 2
+                                    }
+                                );
+
+                            }
+
+                        }
+
+                    }
+
+                },
+
+                plugins: {
+
+                    legend: {
+
+                        display: true
+
+                    }
+
+                }
+
+            }
+
+        });
+
+    }
+
+</script>
 
 {% endblock %}

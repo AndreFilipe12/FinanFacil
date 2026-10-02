@@ -5,8 +5,13 @@ register = template.Library()
 
 @register.filter
 def moeda_brasileira(valor):
+    if valor is None or valor == '':
+        valor = 0
 
-    valor = float(valor)
+    try:
+        valor = float(valor)
+    except (ValueError, TypeError):
+        valor = 0
 
     valor_formatado = f"{valor:,.2f}"
 
